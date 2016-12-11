@@ -15,13 +15,13 @@
 
 <div>
   <h3 style="text-align:center">Introduction</h3>
-  <p> The emerge of the idea "Panorama" has to be dated back to early 20 A.D. and was a means of generating an 'panoptic' view of a vista \cite{wikipedia}. Nowadays,
+  <p> The emerge of the idea "Panorama" has to be dated back to early 20 A.D. and was a means of generating an 'panoptic' view of a vista [1]. Nowadays,
 with the help of advancement of technology, people are able to create desired panorama by simply rotating their cell phones and clicking the shot button. The process
 of synthesizing panorama is relatively straight forward. First step is to take successive photos from the same optical center and next step is finding the alignment between
 each image and warping accordingly, and final step is interpolating the warped image and applied certain blending to remove the visible seams. However, the problem with creating
 panoramas using above approach is that people are required to physically appear at the place where they take the images, which means that if people want to take a panorama
 of Time Square in New York, they have to fly over New York to do so. </p>
-<p>Compared to sequence of images, although some segments within videos have relatively low image quality and also moving object, they are still shot from the same optical center and cover a wide field-of-view. Lui et al. suggests an approach that synthesizing panoramas by identifying proper segments within videos as panorama source \cite{Lui}. They convert the problem into a optimization problem, and set up three constraints in order to evaluate the video segments. Lui ei al. indicates that in order to be a appropriate panorama source, a video segment should cover a wide field-of-view based on the definition of panorama imagery,  be "mosaicable" and the frames should have high image quality
+<p>Compared to sequence of images, although some segments within videos have relatively low image quality and also moving object, they are still shot from the same optical center and cover a wide field-of-view. Lui et al. suggests an approach that synthesizing panoramas by identifying proper segments within videos as panorama source [2]. They convert the problem into a optimization problem, and set up three constraints in order to evaluate the video segments. Lui ei al. indicate that in order to be a appropriate panorama source, a video segment should cover a wide field-of-view based on the definition of panorama imagery,  be "mosaicable" and the frames should have high image quality
 </p>
 </div>
 
@@ -36,13 +36,13 @@ of Time Square in New York, they have to fly over New York to do so. </p>
 </div>
 <p>By default, we set both weights <span lang="latex">$\alpha_v$</span> and <span lang="latex">$\alpha_m$ </span>to be 1.0.</p>
 <p><b>Source Image Visual Quality</b>: The source image visual Quality <span lang="latex">$\mathit{E_{vv}(S_i)}$</span> is defined as how blurry and blocky the image is. <br />
-  We use the idea of Tong et al.'s method of measuring blurring artifacts by using Haar Wavelet Transform \cite{Tong}.</p>
+  We use the idea of Tong et al.'s method of measuring blurring artifacts by using Haar Wavelet Transform [3]. </p>
 <figure align="center">
   <img src="./panImages/a.png" width="200" height="200"></img>
   <img src="./panImages/b.png" width="200" height="200"></img>
   <figcaption>Left figure blurriness:0.8086; Right figure blurriness: 0.3648</figcaption>
 </figure>
-<p>The blockiness is measured by using the method of Wang et al. which estimates the average difference across block boundaries modulated by image activities \cite{Wang}.</p>
+<p>The blockiness is measured by using the method of Wang et al. which estimates the average difference across block boundaries modulated by image activities [4].</p>
 <figure align="center">
   <img src="./panImages/a1.png" width="200" height="200"></img>
   <img src="./panImages/b1.png" width="200" height="200"></img>
@@ -131,5 +131,11 @@ of Time Square in New York, they have to fly over New York to do so. </p>
 <p>It can be observed that before and after segment 7 there are two smooth segments series and a sudden increase in visual quality error at segment 7. In this case, we want to drop segment 7 and synthesize
   two panoramas from segment 1 to 5 and segment 7 to the rest segments.
 <p>3. A bad scene followed by a bad scene. We want to drop both scenes, and we can expect the overrall visual quality errors are relatively high across all the segments.
+<h3>Reference</h3>
+<p>[1]  https://en.wikipedia.org/wiki/Panorama. <br/>
+[2]  F. Lui, Y.-H. Hu, and M. J. Gleicher, Discovering panoramas in web videos, In <i>ACM Multimedia</i>, pages 329-338, 2008. <br/>
+[3]  H. Tong, M. Li, H.-J. Zhang, and C. Zhang. No-reference quality assessment for jpeg2000 compressed images. In <i>IEEE ICIP</i>, pages 981-984, 2000. <br/>
+[4]  Z. Wang, H. Sheikh, and A. Bovik. No-reference perceptual quality assessment of jpeg compressed images. In <i>IEEE ICIP</i>, pages Vol I: 477-480, 2002.
+</p>
 </body>
 </html>
