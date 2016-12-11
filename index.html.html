@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Panorama Discover</title>
+<script type="text/javascript" src="http://latex.codecogs.com/latexit.js"></script>
+</head>
+<body style="background-color:#E5FFCC">
+
+<h1 style="text-align:center">Discovering Panoramas in Web Videos</h1>
+<hr>
+<p style="text-align:center"><a href="https://www.linkedin.com/in/lingfengatuw">Lingfeng Huang</a>, <a href="mailto:fwang64@wisc.edu">Fang Wang</a></p>
+<p Style="text-align:center">University of Wisconsin-Madison</p>
+<p> Related Material: <a href="">paper</a>, <a href="">presentation</a>, <a href="">coding sample</a></p>
+<hr>
+
+<div>
+  <h3 style="text-align:center">Introduction</h3>
+  <p> The emerge of the idea "Panorama" has to be dated back to early 20 A.D. and was a means of generating an 'panoptic' view of a vista \cite{wikipedia}. Nowadays,
+with the help of advancement of technology, people are able to create desired panorama by simply rotating their cell phones and clicking the shot button. The process
+of synthesizing panorama is relatively straight forward. First step is to take successive photos from the same optical center and next step is finding the alignment between
+each image and warping accordingly, and final step is interpolating the warped image and applied certain blending to remove the visible seams. However, the problem with creating
+panoramas using above approach is that people are required to physically appear at the place where they take the images, which means that if people want to take a panorama
+of Time Square in New York, they have to fly over New York to do so. </p>
+<p>Compared to sequence of images, although some segments within videos have relatively low image quality and also moving object, they are still shot from the same optical center and cover a wide field-of-view. Lui et al. suggests an approach that synthesizing panoramas by identifying proper segments within videos as panorama source \cite{Lui}. They convert the problem into a optimization problem, and set up three constraints in order to evaluate the video segments. Lui ei al. indicates that in order to be a appropriate panorama source, a video segment should cover a wide field-of-view based on the definition of panorama imagery,  be "mosaicable" and the frames should have high image quality
+</p>
+</div>
+
+<div>
+  <h3 style="text-align:center">Visual Quality Measure</h3>
+  <p>We measure the visual quality or we called image quality of a single frame based on two terms, one is incorrectness of the motion model <span lang="latex">$\mathit{E_{vm}(S_i)}$</span> and the source image visual quality <span lang="latex">$\mathit{E_{vv}(S_i)}$</span>. Then by setting up the visual quality distortion <span lang="latex">$\mathit{E_v(S_i)}$</span>, we can obtain the visual quality measure.</p>
+</div>
+<div align="center">
+  <span lang="latex">
+                    \mathit{E_v(S_i)} = \alpha_m\mathit{E_{vm}(S_i)} + \alpha_v\mathit{E_{vv}(S_i)}
+  </span>
+</div>
+<p>By default, we set both weights <span lang="latex">$\alpha_v$</span> and <span lang="latex">$\alpha_m$ </span>to be 1.0.</p>
+<p><b>Source Image Visual Quality</b>: The source image visual Quality <span lang="latex">$\mathit{E_{vv}(S_i)}$</span> is defined as how blurry and blocky the image is. <br />
+  We use the idea of Tong et al.'s method of measuring blurring artifacts by using Haar Wavelet Transform \cite{Tong}.</p>
+<figure align="center">
+  <img src="./panImages/a.png" width="200" height="200"></img>
+  <img src="./panImages/b.png" width="200" height="200"></img>
+  <figcaption>Left figure blurriness:0.8086; Right figure blurriness: 0.3648</figcaption>
+</figure>
+<p>The blockiness is measured by using the method of Wang et al. which estimates the average difference across block boundaries modulated by image activities \cite{Wang}.</p>
+<figure align="center">
+  <img src="./panImages/a1.png" width="200" height="200"></img>
+  <img src="./panImages/b1.png" width="200" height="200"></img>
+  <figcaption>Left figure blockiness:0.204; Right figure blurriness: 0.479</figcaption>
+</figure>
+<p>After obtain the blockiness and blurriness from all the frames within a given video segment, we calculate the visual distortion for this segment as follows:</p>
+<div align="center">
+  <span lang="latex">
+                    \mathit{E_{vv}(S_i)} = \sum_{\substack{\mathit{I_k\in S_i}}}\gamma \mathit{q_{bk}(I_k)} + (1 - \gamma)\mathit{q_{br}(I_k)}
+  </span>
+</div>
+<p>where <span lang="latex">$\mathit{q_{bk}(I_k)}$</span> is the measurement of blockiness of given frame, and <span lang="latex">$\mathit{q_{br}(I_k)}$</span> is the measurement of blurriness. Weight <span lang="latex">$\gamma$</span> is set to 0.45.</p>
+
+<p><b>Incorrectness of Motion Model</b>: In order to achieve the "mosaicablity", we use a homography to model the motion between frames. By matching SIFT feature points,
+  we are able to locate significant points between frames and thus obtain the homography.
+  In practice, getting a high quality panorama from video requires the inter-frame motion is closed to its homography and few casual videos can achieve that.
+  Therefore, we measure the error using the real motion vector from SIFT feature points and the predicted value by homography between two successive frames.</p>
+  <div align="center">
+    <span lang="latex">
+                    \mathit{E_{vm}(S_i)} = \sum_{\substack{\mathit{I_k\in S_i}}} \frac{1}{\mathit{n_k}} \sum_{\substack{\mathit{p_{j,k}}\in \mathit{S_i}}} \lVert \mathit{mv(p_{j,k})}, \mathit{mv_h(p_{j,k})} \rVert
+    </span>
+  </div>
+<p>We first for each adjacent frame <span lang="latex">$\mathit{I_k}$</span> and <span lang="latex">$\mathit{I_{k + 1}}$</span> find its matching SIFT feature pairs,
+  and calculate homography using RANSAC based on these feature pairs. The notation <span lang="latex">$\mathit{mv(p_{j,k})}$</span> is the motion vector of <span lang="latex">$\mathit{j^{th}}$</span> SIFT feature point of frame <span lang="latex">$\mathit{I_k}$</span>
+  and <span lang="latex">$\mathit{mv_h(p_{j,k})}$</span> is the predicted motion vector by homography at <span lang="latex">$\mathit{j^{th}}$</span> feature point. Then the error of <span lang="latex">$\mathit{j^{th}}$</span> feature point is taking the L1 norm of these two terms.
+   Then we average the errors of all feature pair in each frame and obtain the incorrectness of motion model by summing up all the average. </p>
+<h3 style="text-align:center">Extent of Scene</h3>
+<p>The extent of scene <span lang="latex">$\varepsilon(\mathit{S_i})$</span> is defined as the scene covered by the video segment.
+  Although it could be good if we maximizing the covering area to obtain a larger field of view, larger field of view often means more distortion.
+  Hence, we want to choose the reference frame where maintains a decent field of view and the distortion is minimum, in other words, we want the minimum area covered by segment <span lang="latex">$\mathit{S_i}$</span> </p>
+  <figure align="center">
+    <img src="./panImages/reference.png" width="400" height="100"></img>
+    <figcaption>Red portion indicates reference frame</figcaption>
+  </figure>
+<p>In order to find the optimal reference frame, we want to search for all possible combination of panorama alignment as follows:</p>
+<div align="center">
+  <span lang="latex">
+    \varepsilon(\mathit{S_i}) = \bigcup_{\mathit{f} \in \mathit{S_i}} \mathit{I(f, r)}
+  </span>
+</div>
+<p>In Lui et al. paper, they used generic polygon clipping for finding the minimum area covered, but we used another approach.
+  Although the accuracy declines, the complexity reduces in decent amount, we choose to find the distance between the center of reference frame and that of all other frames as follows:</p>
+  <div align="center">
+    <span lang="latex">
+      \frac{1}{\mathit{n}} \sum_{\mathit{f \in S_i}}  \lVert \mathit{C_r}, \mathit{f_r} \rVert
+    </span>
+  </div>
+<p>Where <span lang="latex">$\mathit{n}$</span> is the number of frames within the segment, <span lang="latex">$\mathit{C_r}$</span> is the center pixel of the reference frame and <span lang="latex">$\mathit{f_r}$</span> is the center pixel in a given frame.
+<h3 style="text-align:center">Results</h3>
+<p>The results are from the preprocessed video segments which we manually select shots from certain videos and each segment is around 130 frames.
+  First two panoramas are good results and the last one is a failure. (Lower score means better)</p>
+
+<figure align="center">
+  <img src="./panImages/shanghai1309-1440.jpg" width="400" height="160"></img>
+  <figcaption>Image Quality: 33; Motion Error: 587; Visual Quality: 620</figcaption>
+</figure>
+
+<figure align="center">
+  <img src="./panImages/building562-691.jpg" width="400" height="160"></img>
+  <figcaption>Image Quality: 23; Motion Error: 598; Visual Quality: 622</figcaption>
+</figure>
+
+<figure align="center">
+  <img src="./panImages/lakeError1206-1310.jpg" width="400" height="160"></img>
+  <figcaption>Image Quality: 43; Motion Error: 1521; Visual Quality: 1564</figcaption>
+</figure>
+
+<h3 style="text-align:center">Video Segments Fetching</h3>
+<p>Lui et al. preprocess the given video by applying histogram based method for shot boundary detection and
+  shot boundary is detected whenever the histogram intersection between two adjacent frames is below a threshold. <br />
+  However, we detect scene boundary by using the visual quality distortion.The idea is that in order to calculate the homography between two adjacent frames, we should have at least 4 SIFT matching pairs.
+  According to our experiments, the video segments we have do not have enough pairs to calculate homography when two frames are at scene boundary and even when they have enough pairs to calculate the visual quality error tend to be high.
+  Thus, we cut the whole video into 20 frames segments, then compute visual quality error for each segments and evaluate the visual quality error for each segments, and append all adjacent segments to obtain a optimal segement for panorama stiching.
+  <br />We define the types of videos that we might encounter while fetching as follows:</p>
+<p>1. A scene that is not capable of synthesizing panorama (bad scene) followed by a scene that is proper source for panorama (good scene) or a good scene followed by a bad scene,
+  in both cases we want to only obtain one panorama from the good scene:</p>
+  <figure align="center">
+    <img src="./panImages/bad-good-fig.jpg" width="380" height="300"></img>
+  </figure>
+<p> Above figure shows that the overrall visual quality error for bad scene segments are high (over 250) and we have this sudden increase in the error at segment 6,
+  thus we can say segment 6 has a high possibility of containing a scene transition. And we want drop all the segments before segment 7 due to high error and synthesize panorama use only segment 7 to 12</p>
+<p>2. A good scene followed a good scene followed. In this situation, we want to get two panoramas :
+  <figure align="center">
+    <img src="./panImages/good-good-fig.jpg" width="380" height="300"></img>
+  </figure>
+<p>It can be observed that before and after segment 7 there are two smooth segments series and a sudden increase in visual quality error at segment 7. In this case, we want to drop segment 7 and synthesize
+  two panoramas from segment 1 to 5 and segment 7 to the rest segments.
+<p>3. A bad scene followed by a bad scene. We want to drop both scenes, and we can expect the overrall visual quality errors are relatively high across all the segments.
+</body>
+</html>
