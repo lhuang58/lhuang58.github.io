@@ -16,7 +16,7 @@
 <div>
   <h3 style="text-align:center">Introduction</h3>
   <p> The emerge of the idea "Panorama" has to be dated back to early 20 A.D. and was a means of generating an 'panoptic' view of a vista [1]. Nowadays,
-with the help of advancement of technology, people are able to create desired panorama by simply rotating their cell phones and clicking the shot button. The process
+with the help of advanced technology, people are able to create desired panorama by simply rotating their cell phones and clicking the shot button. The process
 of synthesizing panorama is relatively straight forward. First step is to take successive photos from the same optical center and next step is finding the alignment between
 each image and warping accordingly, and final step is interpolating the warped image and applied certain blending to remove the visible seams. However, the problem with creating
 panoramas using above approach is that people are required to physically appear at the place where they take the images, which means that if people want to take a panorama
@@ -27,7 +27,7 @@ of Time Square in New York, they have to fly over New York to do so. </p>
 
 <div>
   <h3 style="text-align:center">Visual Quality Measure</h3>
-  <p>We measure the visual quality or we called image quality of a single frame based on two terms, one is incorrectness of the motion model <span lang="latex">$\mathit{E_{vm}(S_i)}$</span> and the source image visual quality <span lang="latex">$\mathit{E_{vv}(S_i)}$</span>. Then by setting up the visual quality distortion <span lang="latex">$\mathit{E_v(S_i)}$</span>, we can obtain the visual quality measure.</p>
+  <p>We measure the visual quality or we call image quality of a single frame based on two terms, one is incorrectness of the motion model <span lang="latex">$\mathit{E_{vm}(S_i)}$</span> and the source image visual quality <span lang="latex">$\mathit{E_{vv}(S_i)}$</span>. Then by setting up the visual quality distortion <span lang="latex">$\mathit{E_v(S_i)}$</span>, we can obtain the visual quality measure.</p>
 </div>
 <div align="center">
   <span lang="latex">
@@ -35,7 +35,7 @@ of Time Square in New York, they have to fly over New York to do so. </p>
   </span>
 </div>
 <p>By default, we set both weights <span lang="latex">$\alpha_v$</span> and <span lang="latex">$\alpha_m$ </span>to be 1.0.</p>
-<p><b>Source Image Visual Quality</b>: The source image visual Quality <span lang="latex">$\mathit{E_{vv}(S_i)}$</span> is defined as how blurry and blocky the image is. <br />
+<p><b>Source Image Visual Quality</b>: The source image visual quality <span lang="latex">$\mathit{E_{vv}(S_i)}$</span> is defined as how blurry and blocky the image is. <br />
   We use the idea of Tong et al.'s method of measuring blurring artifacts by using Haar Wavelet Transform [3]. </p>
 <figure align="center">
   <img src="./panImages/a.png" width="200" height="200"></img>
@@ -87,12 +87,12 @@ of Time Square in New York, they have to fly over New York to do so. </p>
   Although the accuracy declines, the complexity reduces in decent amount, we choose to find the distance between the center of reference frame and that of all other frames as follows:</p>
   <div align="center">
     <span lang="latex">
-      \frac{1}{\mathit{n}} \sum_{\mathit{f \in S_i}}  \lVert \mathit{C_r}, \mathit{f_r} \rVert
+      \frac{1}{\mathit{n}} \sum_{\mathit{f \in S_i}}  \lVert \mathit{C_r}, \mathit{C_f} \rVert
     </span>
   </div>
 <p>Where <span lang="latex">$\mathit{n}$</span> is the number of frames within the segment, <span lang="latex">$\mathit{C_r}$</span> is the center pixel of the reference frame and <span lang="latex">$\mathit{f_r}$</span> is the center pixel in a given frame.
 <h3 style="text-align:center">Results</h3>
-<p>The results are from the preprocessed video segments which we manually select shots from certain videos and each segment is around 130 frames.
+<p>The results are obtained by using the preprocessed video segments which we manually select shots from certain videos and each segment is around 130 frames.
   First two panoramas are good results and the last one is a failure. (Lower score means better)</p>
 
 <figure align="center">
@@ -114,8 +114,9 @@ of Time Square in New York, they have to fly over New York to do so. </p>
 <p>Lui et al. preprocess the given video by applying histogram based method for shot boundary detection and
   shot boundary is detected whenever the histogram intersection between two adjacent frames is below a threshold. <br />
   However, we detect scene boundary by using the visual quality distortion.The idea is that in order to calculate the homography between two adjacent frames, we should have at least 4 SIFT matching pairs.
-  According to our experiments, the video segments we have do not have enough pairs to calculate homography when two frames are at scene boundary and even when they have enough pairs to calculate the visual quality error tend to be high.
-  Thus, we cut the whole video into 20 frames segments, then compute visual quality error for each segments and evaluate the visual quality error for each segments, and append all adjacent segments to obtain a optimal segement for panorama stiching.
+  According to our experiments, the video segments we have do not always have enough pairs to calculate homography when two frames are at scene boundary and even when they have enough pairs to calculate the visual quality error tend to be high.
+  Thus, we cut the whole video into 20 frames segments, then compute visual quality error for each segments and by setting the visual quality error to infinity when encounter scene transition segment and dropping that segment
+   we are able to append all adjacent segments to obtain a optimal segement for panorama stiching.
   <br />We define the types of videos that we might encounter while fetching as follows:</p>
 <p>1. A scene that is not capable of synthesizing panorama (bad scene) followed by a scene that is proper source for panorama (good scene) or a good scene followed by a bad scene,
   in both cases we want to only obtain one panorama from the good scene:</p>
